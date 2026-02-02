@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 function App() {
   const [sessionId, setSessionId] = useState("game123");
