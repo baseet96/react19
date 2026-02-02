@@ -41,16 +41,16 @@ function App() {
   };
 
   return (
-    <div style={{ fontFamily: "sans-serif", padding: 20 }}>
+    <div>
       <h2>Rock Paper Scissors (WebSocket)</h2>
 
       <div>Status: {status}</div>
 
-      <div style={{ marginTop: 10 }}>
+      <div>
         <button onClick={connect}>Connect</button>
       </div>
 
-      <div style={{ marginTop: 20 }}>
+      <div>
         <label>Session ID: </label>
         <input
           value={sessionId}
@@ -58,7 +58,7 @@ function App() {
         />
       </div>
 
-      <div style={{ marginTop: 10 }}>
+      <div>
         <label>Move: </label>
         <select value={move} onChange={(e) => setMove(e.target.value)}>
           <option>rock</option>
@@ -67,12 +67,12 @@ function App() {
         </select>
       </div>
 
-      <div style={{ marginTop: 10 }}>
+      <div>
         <button onClick={sendMove}>Play</button>
       </div>
 
       {result && (
-        <div style={{ marginTop: 20 }}>
+        <div>
           <h3>Game Result</h3>
           <pre>{JSON.stringify(result, null, 2)}</pre>
         </div>
