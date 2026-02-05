@@ -83,7 +83,7 @@ export default function App() {
             setMove={setMove}
             onPlay={sendMove}
           />
-          <ResultPanel result={result} />
+          <ResultPanel result={result} onClose={() => setResult(null)} />
         </Stack>
       </Paper>
     </Container>
