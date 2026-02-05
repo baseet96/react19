@@ -63,7 +63,7 @@ export default function App() {
           move,
         })
       );
-      setResult(null);
+      	setResult({ status: "waiting" });
     } catch (err) {
       setResult({ error: "Send error", message: "Unable to send move. Try reconnecting or using a different session ID." });
     }
