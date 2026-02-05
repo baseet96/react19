@@ -7,7 +7,7 @@ import GameControls from "./components/GameControls";
 import ResultPanel from "./components/ResultPanel";
 
 export default function App() {
-  const [sessionId, setSessionId] = useState("game123");
+  const [sessionId, setSessionId] = useState("");
   const [move, setMove] = useState("rock");
   const [status, setStatus] = useState("Disconnected");
   const [result, setResult] = useState(null);
@@ -19,30 +19,54 @@ export default function App() {
   const connect = () => {
     if (socketRef.current) socketRef.current.close();
 
+    if (!sessionId || sessionId.trim() === "") {
+      setResult({ error: "No session ID", message: "Please enter a session ID before connecting." });
+      return;
+    }
+
     const ws = new WebSocket(wsUrl);
     socketRef.current = ws;
 
     ws.onopen = () => setStatus("Connected");
-    ws.onclose = () => setStatus("Disconnected");
-    ws.onerror = () => setStatus("Error");
-    ws.onmessage = (e) => setResult(JSON.parse(e.data));
+    ws.onclose = () => {
+      setStatus("Disconnected");
+    };
+    ws.onerror = (err) => {
+      setStatus("Error");
+      setResult({ error: "Connection error", message: "WebSocket error - try reconnecting or using a different session ID." });
+    };
+    ws.onmessage = (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        if (data && data.error) {
+          setResult({ error: data.error, message: data.message || "Server error. Try a different session ID." });
+        } else {
+          setResult(data);
+        }
+      } catch (err) {
+        setResult({ error: "Invalid response", details: e.data });
+      }
+    };
   };
 
   const sendMove = () => {
-    if (!socketRef.current || socketRef.current.readyState !== 1) {
-      alert("WebSocket not connected");
+    if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
+      setResult({ error: "Not connected", message: "WebSocket not connected. Please connect first." });
       return;
     }
 
-    socketRef.current.send(
-      JSON.stringify({
-        action: "play",
-        sessionId,
-        move,
-      })
-    );
-
-    setResult(null);
+    try {
+      socketRef.current.send(
+        JSON.stringify({
+          action: "play",
+          sessionId,
+          move,
+        })
+      );
+      setResult(null);
+    } catch (err) {
+      setResult({ error: "Send error", message: "Unable to send move. Try reconnecting or using a different session ID." });
+    }
   };
 
   return (
